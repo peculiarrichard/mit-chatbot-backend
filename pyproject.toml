@@ -1,0 +1,19 @@
+[project]
+name = "mit chatbot"
+version = "0.2.0"
+description = "A service that powers the MIT Smart chatbot"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]>=0.116.1",
+    "pandas>=2.3.1",
+    "pdfplumber>=0.11.7",
+    "pydantic-settings>=2.10.1",
+    "sqlalchemy>=2.0.43
+    "python-json-logger>=3.3.0",
+    "bcrypt>=4.3.0",
+    "jwt>=1.4.0",
+]
+
+[tool.ruff]
+line-length = 88
