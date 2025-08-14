@@ -13,11 +13,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-app_router = APIRouter(prefix="/api", tags=["api"])
+app_router = APIRouter()
 
 
 
-app_router.post("/auth/student")
+@app_router.post("/auth/student")
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.username == user.username).first()
     if existing_user:
@@ -37,7 +37,7 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     
     return {"data": db_user, "message": "User created successfully"}
 
-app_router.post("/message/")
+@app_router.post("/message")
 async def send_message(
     message: MessageCreate,
     background_tasks: BackgroundTasks,
@@ -93,7 +93,7 @@ async def send_message(
     
     return {"response": bot_response}
 
-app_router.get("/messages/{user_identifier}")
+@app_router.get("/messages/{user_identifier}")
 async def get_messages(user_identifier: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == user_identifier or User.unique_identifier == user_identifier).first()
     if not user:
@@ -111,7 +111,7 @@ async def get_messages(user_identifier: str, db: Session = Depends(get_db)):
     ]
     return {"data": data, "message": "Messages fetched successfully"}
 
-app_router.post("/auth/admin/register")
+@app_router.post("/auth/admin/register")
 async def register_admin(admin: AdminCreate, db: Session = Depends(get_db)):
     existing_admin = db.query(Admin).filter(Admin.email == admin.email).first()
     if existing_admin:
@@ -139,7 +139,7 @@ async def login_admin(admin: AdminLogin, db: Session = Depends(get_db)):
     return {"data": data, "message": "Admin sign in successful"}
 
 
-app_router.get("/admin/unanswered-questions")
+@app_router.get("/admin/unanswered-questions")
 async def get_unanswered_questions(
     token_data: dict = Depends(verify_token),
     db: Session = Depends(get_db)
@@ -161,7 +161,7 @@ async def get_unanswered_questions(
     return {"data": unanswererd_questions, "message": "Unanswered questions fetched successfully"}
 
 
-app_router.post("/admin/answer-question/{question_id}")
+@app_router.post("/admin/answer-question/{question_id}")
 async def answer_question(
     question_id: int,
     answer_data: AnswerQuestion,
@@ -187,7 +187,7 @@ async def answer_question(
     return {"data": question, "message": "Question answered successfully"}
 
 
-app_router.get("/admin/qa-entries")
+@app_router.get("/admin/qa-entries")
 async def get_qa_entries(
     token_data: dict = Depends(verify_token),
     db: Session = Depends(get_db)
@@ -196,7 +196,7 @@ async def get_qa_entries(
     return {"data": entries, "message": "QA entries fetched successfully"}
 
 
-app_router.get("/admin/unanswered-questions/{question_id}")
+@app_router.get("/admin/unanswered-questions/{question_id}")
 async def get_unanswered_question(
     question_id: int,
     token_data: dict = Depends(verify_token),
@@ -209,7 +209,7 @@ async def get_unanswered_question(
     return {"data": question, "message": "Unanswered question fetched successfully"}
 
 
-app_router.post("/admin/qa-entries")
+@app_router.post("/admin/qa-entries")
 async def create_qa_entries(qa_entries: List[QAEntryCreate], token_data: dict = Depends(verify_token), db: Session = Depends(get_db)):
     for entry in qa_entries:
         qa_entry = QAEntry(question=entry.question, answer=entry.answer)

@@ -12,7 +12,7 @@ OPENROUTER_API_KEY = settings.OPENROUTER_API_KEY
 class OpenRouterService:
     def __init__(self):
         self.api_key = OPENROUTER_API_KEY
-        self.base_url = "https://openrouter.ai/api/v1"
+        self.base_url = "https://openrouter.ai/api/v1/chat/completions"
     
     async def generate_response(self, messages: List[dict], qa_entries: List[dict]) -> str:
         system_message = {
@@ -35,13 +35,14 @@ Rules:
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.post(
-                    f"{self.base_url}/chat/completions",
+                    f"{self.base_url}",
                     headers={
                         "Authorization": f"Bearer {self.api_key}",
                         "Content-Type": "application/json"
                     },
                     json={
-                        "model": "anthropic/claude-3-sonnet",
+                        # "model": "anthropic/claude-3-sonnet",
+                        "model": "deepseek/deepseek-r1-0528:free",
                         "messages": all_messages,
                         "max_tokens": 500,
                         "temperature": 0.7
@@ -50,6 +51,7 @@ Rules:
                 response.raise_for_status()
                 result = response.json()
                 logger.info("Bot response generated successfully")
+                logger.info(result)
                 return result["choices"][0]["message"]["content"]
             
             except Exception as e:
