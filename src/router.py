@@ -10,6 +10,7 @@ from src.bot_service import openrouter_service
 from src.admin_service import hash_password, verify_password, verify_token, create_access_token, send_email_notification
 from sqlalchemy.sql import func
 import logging
+from sqlalchemy import or_
 
 logger = logging.getLogger(__name__)
 
@@ -95,11 +96,23 @@ async def send_message(
 
 @app_router.get("/messages/{user_identifier}")
 async def get_messages(user_identifier: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == user_identifier or User.unique_identifier == user_identifier).first()
+    user = db.query(User).filter(
+        or_(
+            User.username == user_identifier,
+            User.unique_identifier == user_identifier
+        )
+    ).first()
+    
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    messages = db.query(Message).filter(Message.user_id == user.id).order_by(Message.created_at).all()
+    messages = (
+        db.query(Message)
+        .filter(Message.user_id == user.id)
+        .order_by(Message.created_at)
+        .all()
+    )
+    
     data = [
         MessageResponse(
             id=msg.id,
@@ -131,11 +144,11 @@ async def login_admin(admin: AdminLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token = create_access_token({"sub": admin.email, "type": "admin"})
-    data ={
-        admin: db_admin,
-        token: token,
-        "token_type": "bearer"
-    }
+    data = {
+    "admin": db_admin,
+    "token": token,
+    "token_type": "bearer"
+}
     return {"data": data, "message": "Admin sign in successful"}
 
 

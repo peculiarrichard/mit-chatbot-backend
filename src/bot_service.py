@@ -22,11 +22,11 @@ class OpenRouterService:
 {chr(10).join([f"Q: {qa['question']}{chr(10)}A: {qa['answer']}{chr(10)}" for qa in qa_entries])}
 
 Rules:
-1. Only answer questions based on the provided Q&A database
-2. Be friendly and helpful in your responses
+1. Only answer questions based on the provided Q&A database. Don't say you ae using a database source. Make it natural and if you are asked something else that is not relating to enquiries on the MIT University of lagos program, say you are desinged only to provide answers for this program. 
+2. Be friendly and helpful in your responses. You can add a bit of humor to make the conversation more engaging.
 3. If you cannot find the answer in the database, respond with exactly: "I don't know the answer to that question yet, but don't worry! Please reach back out in the next 24-48 hours as I will inform our admin team to provide you with an accurate answer."
 4. Do not provide information outside of the Q&A database
-5. Keep responses concise but informative
+5. Keep responses concise but informative and engaging. Format your responses in a way that is easy to read and understand. Add paragraphs where appropriate.
 """
         }
         
@@ -50,8 +50,9 @@ Rules:
                 )
                 response.raise_for_status()
                 result = response.json()
-                logger.info("Bot response generated successfully")
                 logger.info(result)
+                logger.info("Bot response generated successfully")
+                logger.info(result["choices"][0]["message"]["content"])
                 return result["choices"][0]["message"]["content"]
             
             except Exception as e:
