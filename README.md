@@ -1,4 +1,4 @@
-# University Chatbot - Complete Setup Guide
+# MIT Smart Chatbot - Complete Setup Guide
 
 This is a comprehensive university chatbot system built with FastAPI, PostgreSQL, React, and OpenRouter API.
 
